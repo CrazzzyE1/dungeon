@@ -3,7 +3,6 @@ package ru.geekbrains.dungeon;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
@@ -13,14 +12,6 @@ public class DungeonGame extends ApplicationAdapter {
     private ProjectileController projectileController;
     private GameMap gameMap;
     private Hero hero;
-
-    // Домашнее задание:
-    // 0. Разобраться со структурой кода
-    // 1. Кнопкой Q необходимо переключать режим стрельбы: либо стреляем по одному снаряду,
-    // либо по 2
-    // 2. На векторах сделайте движение в разные стороны (влево, вверх, вниз, вправо),
-    // с запретом на выезд за пределы карты
-    // 3. * Снаряд должен выпускаться в сторону последнего движения
 
     @Override
     public void create() {
