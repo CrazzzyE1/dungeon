@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class GameMap {
     public static final int CELLS_X = 20;
     public static final int CELLS_Y = 20;
+    public static final int CELLS_WEIGHT = 40;
+    public static final int CELLS_HEIGHT = 40;
+
 
     private byte[][] data;
     private TextureRegion grassTexture;
@@ -19,7 +22,7 @@ public class GameMap {
     public void render(SpriteBatch batch) {
         for (int i = 0; i < CELLS_X; i++) {
             for (int j = 0; j < CELLS_Y; j++) {
-                batch.draw(grassTexture, i * 40, j * 40);
+                batch.draw(grassTexture, i * CELLS_WEIGHT, j * CELLS_HEIGHT);
             }
         }
     }
