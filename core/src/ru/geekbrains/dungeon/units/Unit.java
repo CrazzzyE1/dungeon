@@ -1,5 +1,6 @@
 package ru.geekbrains.dungeon.units;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,6 +12,8 @@ public abstract class Unit {
     GameController gc;
     TextureRegion texture;
     TextureRegion textureHp;
+
+
     int hp;
     int hpMax;
     int cellX;
@@ -41,6 +44,8 @@ public abstract class Unit {
 
     public abstract void update(float dt);
 
+    public abstract void stepCounter();
+
     public void render(SpriteBatch batch) {
         batch.draw(texture, cellX * GameMap.CELL_SIZE, cellY * GameMap.CELL_SIZE);
         batch.setColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -50,5 +55,7 @@ public abstract class Unit {
         batch.setColor(0.0f, 1.0f, 0.0f, 1.0f);
         batch.draw(textureHp, cellX * GameMap.CELL_SIZE + 2, cellY * GameMap.CELL_SIZE + 52, (float) hp / hpMax * 56, 8);
         batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+
     }
 }

@@ -2,6 +2,7 @@ package ru.geekbrains.dungeon.units;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import ru.geekbrains.dungeon.GameController;
@@ -11,6 +12,9 @@ public class Hero extends Unit {
     float movementTime;
     float movementMaxTime;
     int targetX, targetY;
+    int experience = 0;
+    int numberOfMoves = 5;
+    BitmapFont font = new BitmapFont();
 
     public Hero(TextureAtlas atlas, GameController gc) {
         super(gc, 1, 1, 10);
@@ -23,6 +27,13 @@ public class Hero extends Unit {
 
     public void update(float dt) {
         checkMovement(dt);
+        Gdx.graphics.setTitle("Hero experience: " + experience);
+    }
+
+    @Override
+    public void stepCounter() {
+        numberOfMoves--;
+        if (numberOfMoves < 1) numberOfMoves = 5;
     }
 
     public boolean isStayStill() {
@@ -41,7 +52,14 @@ public class Hero extends Unit {
         if (m != null) {
             targetX = cellX;
             targetY = cellY;
-            m.takeDamage(1);
+            stepCounter();
+            if (Math.random() * 100 < 25) {
+                this.takeDamage(1);
+            }
+            if (hp < 1) hp = hpMax;
+
+
+            if (m.takeDamage(1)) experience++;
         }
 
         if (!gc.getGameMap().isCellPassable(targetX, targetY)) {
@@ -50,9 +68,11 @@ public class Hero extends Unit {
         }
 
         if (!isStayStill()) {
+
             movementTime += dt;
             if (movementTime > movementMaxTime) {
                 movementTime = 0;
+                stepCounter();
                 cellX = targetX;
                 cellY = targetY;
             }
@@ -75,5 +95,7 @@ public class Hero extends Unit {
         batch.setColor(0.0f, 1.0f, 0.0f, 1.0f);
         batch.draw(textureHp, px + 2, py + 52, (float) hp / hpMax * 56, 8);
         batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+        font.draw(batch, "Hero's experience: " + experience, 20, 700);
+        font.draw(batch, "Num of moves: " + numberOfMoves, px, py);
     }
 }

@@ -13,13 +13,6 @@ public class DungeonGame extends ApplicationAdapter {
     private SpriteBatch batch;
     private GameController gameController;
 
-    // Домашнее задания:
-    // 1. Разорабаться с кодом;
-    // 2. Добавить герою параметр опыт, при уничтожении монстра опыт должен повыситься на 1;
-    // 3. Добавьте счетчик ходов (5 штук), отобразите его возле персонада, каждый шаг
-    // уменьшает счетчик, как только он падает до нуля, то сразу же восстанаваливается;
-    // 4. * С вероятностью 25% монстр может стукнуть в ответ;
-
     @Override
     public void create() {
         batch = new SpriteBatch();
@@ -40,9 +33,9 @@ public class DungeonGame extends ApplicationAdapter {
         gameController.getHero().render(batch);
         gameController.getMonsterController().render(batch);
         gameController.getProjectileController().render(batch);
-        batch.setColor(1,1,1,0.5f);
+        batch.setColor(1, 1, 1, 0.5f);
         batch.draw(cursorTexture, gameController.getCursorX() * GameMap.CELL_SIZE, gameController.getCursorY() * GameMap.CELL_SIZE);
-        batch.setColor(1,1,1,1);
+        batch.setColor(1, 1, 1, 1);
         batch.end();
     }
 

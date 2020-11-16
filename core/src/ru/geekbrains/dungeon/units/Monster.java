@@ -26,4 +26,9 @@ public class Monster extends Unit {
 
     public void update(float dt) {
     }
+
+    @Override
+    public void stepCounter() {
+
+    }
 }

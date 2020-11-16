@@ -49,7 +49,6 @@ public class GameController {
     public void update(float dt) {
         cursorX = (Gdx.input.getX() / GameMap.CELL_SIZE);
         cursorY = ((720 - Gdx.input.getY()) / GameMap.CELL_SIZE);
-
         projectileController.update(dt);
         hero.update(dt);
         monsterController.update(dt);
