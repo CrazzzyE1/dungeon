@@ -1,8 +1,8 @@
 package ru.geekbrains.dungeon.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 import ru.geekbrains.dungeon.helpers.Assets;
-import ru.geekbrains.dungeon.game.GameController;
 
 public class Hero extends Unit {
     private String name;
@@ -14,6 +14,10 @@ public class Hero extends Unit {
         this.hp = this.hpMax;
         this.texture = Assets.getInstance().getAtlas().findRegion("knight");
         this.textureHp = Assets.getInstance().getAtlas().findRegion("hp");
+    }
+
+    public void moneyUp(){
+        this.coins += MathUtils.random(1 , 3);
     }
 
     public void update(float dt) {

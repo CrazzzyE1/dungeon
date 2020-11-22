@@ -24,6 +24,7 @@ public class Monster extends Unit {
         this.hpMax = 10;
         this.hp = hpMax;
         this.target = gc.getUnitController().getHero();
+
     }
 
     public void update(float dt) {

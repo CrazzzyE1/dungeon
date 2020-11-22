@@ -22,6 +22,8 @@ public abstract class Unit implements Poolable {
     int targetX, targetY;
     int turns, maxTurns;
     float innerTimer;
+    int coins;
+    float alfaColor;
 
     public int getDefence() {
         return defence;
@@ -39,6 +41,10 @@ public abstract class Unit implements Poolable {
         return cellY;
     }
 
+    public int getCoins() {
+        return coins;
+    }
+
     public Unit(GameController gc, int cellX, int cellY, int hpMax) {
         this.gc = gc;
         this.hpMax = hpMax;
@@ -53,9 +59,12 @@ public abstract class Unit implements Poolable {
         this.movementMaxTime = 0.2f;
         this.attackRange = 2;
         this.innerTimer = MathUtils.random(1000.0f);
+        this.coins = 0;
+        this.alfaColor = 0.2f;
     }
 
     public void startTurn() {
+        if(hp<hpMax) hp++;
         turns = maxTurns;
     }
 
@@ -68,6 +77,7 @@ public abstract class Unit implements Poolable {
         hp -= amount;
         if (hp <= 0) {
             gc.getUnitController().removeUnitAfterDeath(this);
+            gc.getUnitController().getHero().moneyUp();
         }
         return hp <= 0;
     }
@@ -103,6 +113,11 @@ public abstract class Unit implements Poolable {
 
     public void update(float dt) {
         innerTimer += dt;
+        if(hp != hpMax){
+            alfaColor = 1.0f;
+        } else {
+            alfaColor = 0.2f;
+        }
         if (!isStayStill()) {
             movementTime += dt;
             if (movementTime > movementMaxTime) {
@@ -122,14 +137,14 @@ public abstract class Unit implements Poolable {
             py = cellY * GameMap.CELL_SIZE + (targetY - cellY) * (movementTime / movementMaxTime) * GameMap.CELL_SIZE;
         }
         batch.draw(texture, px, py);
-        batch.setColor(0.0f, 0.0f, 0.0f, 1.0f);
+        batch.setColor(0.0f, 0.0f, 0.0f, alfaColor);
 
 
         float barX = px, barY = py + MathUtils.sin(innerTimer * 5.0f) * 2;
         batch.draw(textureHp, barX + 1, barY + 51, 58, 10);
-        batch.setColor(0.7f, 0.0f, 0.0f, 1.0f);
+        batch.setColor(0.7f, 0.0f, 0.0f, alfaColor);
         batch.draw(textureHp, barX + 2, barY + 52, 56, 8);
-        batch.setColor(0.0f, 1.0f, 0.0f, 1.0f);
+        batch.setColor(0.0f, 1.0f, 0.0f, alfaColor);
         batch.draw(textureHp, barX + 2, barY + 52, (float) hp / hpMax * 56, 8);
         batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         font18.draw(batch, "" + hp, barX, barY + 64, 60, 1, false);
