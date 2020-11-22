@@ -13,12 +13,6 @@ public class DungeonGame extends ApplicationAdapter {
     private SpriteBatch batch;
     private GameController gameController;
 
-    // Домашнее задания:
-    // 1. Разорабаться с кодом;
-    // 2. Монстры охотятся за героем, только если он находится в радиусе N клеток (пусть 5),
-    // в противном случае, бегают на случайную клетку
-    // > Если п. 2 окажется сложным - можете скинуть в дз пачку вопросов, что не ясно
-
     @Override
     public void create() {
         batch = new SpriteBatch();

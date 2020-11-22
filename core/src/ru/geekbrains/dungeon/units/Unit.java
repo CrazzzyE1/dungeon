@@ -87,6 +87,7 @@ public abstract class Unit {
             targetX = argCellX;
             targetY = argCellY;
         }
+
     }
 
     public boolean canIAttackThisTarget(Unit target) {
