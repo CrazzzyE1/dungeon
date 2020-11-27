@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import lombok.Data;
-import ru.geekbrains.dungeon.screens.ScreenManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,14 +72,20 @@ public class UnitController {
         hero.update(dt);
         monsterController.update(dt);
 
-        if (!currentUnit.isActive() || currentUnit.getTurns() == 0) {
-            nextTurn();
+        if (!currentUnit.isActive()) {
+                        nextTurn();
+        }
+        if(currentUnit.getTurns() < 1) {
+            if(currentUnit.getAttack() < 1){
+                nextTurn();
+            }
         }
     }
 
     public void removeUnitAfterDeath(Unit unit) {
         int unitIndex = allUnits.indexOf(unit);
         allUnits.remove(unit);
+
         if (unitIndex <= index) {
             index--;
         }
