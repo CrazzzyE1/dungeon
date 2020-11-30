@@ -26,8 +26,10 @@ public class Hero extends Unit {
             Monster m = gc.getUnitController().getMonsterController().getMonsterInCell(gc.getCursorX(), gc.getCursorY());
             if (m != null && canIAttackThisTarget(m)) {
                 attack(m);
-            } else {
+            } else if (canIGoTo()){
                 goTo(gc.getCursorX(), gc.getCursorY());
+            } else {
+                gc.getUnitController().nextTurn();
             }
         }
     }

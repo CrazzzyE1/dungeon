@@ -10,7 +10,8 @@ import ru.geekbrains.dungeon.screens.ScreenManager;
 @Data
 public class GameController {
     public static final int INITIAL_MONSTERS_COUNT = 3;
-    public static final int TURNS_COUNT = 5;
+//    public static final int TURNS_COUNT = 5;
+//    public static final int ATTACK_COUNT = 5;
 
     private SpriteBatch batch;
     private ProjectileController projectileController;
@@ -50,6 +51,7 @@ public class GameController {
         checkMouse();
         projectileController.update(dt);
         unitController.update(dt);
+
     }
 
     public void checkMouse() {

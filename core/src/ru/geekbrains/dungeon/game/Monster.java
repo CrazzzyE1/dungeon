@@ -1,6 +1,7 @@
 package ru.geekbrains.dungeon.game;
 
 import com.badlogic.gdx.math.MathUtils;
+import lombok.Data;
 import ru.geekbrains.dungeon.helpers.Assets;
 import ru.geekbrains.dungeon.game.GameController;
 import ru.geekbrains.dungeon.helpers.Utils;
@@ -43,6 +44,10 @@ public class Monster extends Unit {
     public void think(float dt) {
         if (canIAttackThisTarget(target)) {
             attack(target);
+            return;
+        }
+        if(!canIGoTo() && !canIAttackThisTarget(target)){
+            turns = 0; attack = 0;
             return;
         }
         if (amIBlocked()) {
