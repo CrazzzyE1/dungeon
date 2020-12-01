@@ -5,10 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import lombok.Data;
-import ru.geekbrains.dungeon.game.BattleCalc;
-import ru.geekbrains.dungeon.game.GameController;
-import ru.geekbrains.dungeon.game.GameMap;
-import ru.geekbrains.dungeon.game.Weapon;
+import ru.geekbrains.dungeon.game.*;
 import ru.geekbrains.dungeon.helpers.Assets;
 import ru.geekbrains.dungeon.helpers.Poolable;
 
@@ -56,6 +53,7 @@ public abstract class Unit implements Poolable {
     float movementMaxTime;
     int targetX, targetY;
     Weapon weapon;
+    Armor armor;
 
     float innerTimer;
     StringBuilder stringHelper;
@@ -122,7 +120,7 @@ public abstract class Unit implements Poolable {
         if (!gc.getGameMap().isCellPassable(argCellX, argCellY) || !gc.getUnitController().isCellFree(argCellX, argCellY)) {
             return;
         }
-        if (stats.movePoints > 0 && Math.abs(argCellX - cellX) + Math.abs(argCellY - cellY) == 1) {
+        if (stats.movePoints >= gc.getGameMap().getStepCost(argCellX, argCellY) && Math.abs(argCellX - cellX) + Math.abs(argCellY - cellY) == 1) {
             targetX = argCellX;
             targetY = argCellY;
             currentDirection = Direction.getMoveDirection(cellX, cellY, targetX, targetY);
@@ -152,7 +150,8 @@ public abstract class Unit implements Poolable {
                 movementTime = 0;
                 cellX = targetX;
                 cellY = targetY;
-                stats.movePoints--;
+
+                stats.movePoints -= gc.getGameMap().getStepCost(cellX, cellY);
                 gc.getGameMap().checkAndTakeDrop(this);
             }
         }
@@ -163,6 +162,8 @@ public abstract class Unit implements Poolable {
 
         float px = cellX * GameMap.CELL_SIZE;
         float py = cellY * GameMap.CELL_SIZE;
+
+
 
         if (!isStayStill()) {
             px = cellX * GameMap.CELL_SIZE + (targetX - cellX) * (movementTime / movementMaxTime) * GameMap.CELL_SIZE;
@@ -181,14 +182,23 @@ public abstract class Unit implements Poolable {
         batch.draw(textureHp, barX + 2, barY + 52, (float) stats.hp / stats.maxHp * 56, 8);
         batch.setColor(1.0f, 1.0f, 1.0f, hpAlpha);
         stringHelper.setLength(0);
-        stringHelper.append(stats.hp);
-        font18.setColor(1.0f, 1.0f, 1.0f, hpAlpha);
-        font18.draw(batch, stringHelper, barX, barY + 64, 60, 1, false);
+        if (cellX == gc.getCursorX() && cellY == gc.getCursorY() && !gc.getUnitController().isItMyTurn(this)){
+            stringHelper.append("Gold: ").append(gold + "\n");
+            stringHelper.append("Weapon: " + weapon.getType());
+            stringHelper.append(" Anti").append(armor.getType());
+            font18.draw(batch, stringHelper, barX, barY + 80, 60, 1, false);
+        } else {
+            stringHelper.append(stats.hp);
+            font18.setColor(1.0f, 1.0f, 1.0f, hpAlpha);
+            font18.draw(batch, stringHelper, barX, barY + 64, 60, 1, false);
+        }
 
         font18.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         if (gc.getUnitController().isItMyTurn(this)) {
             stringHelper.setLength(0);
             stringHelper.append("MP: ").append(stats.movePoints).append(" AP: ").append(stats.attackPoints);
+            stringHelper.append(" Anti").append(armor.getType());
+
             font18.draw(batch, stringHelper, barX, barY + 80, 60, 1, false);
         }
         batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);

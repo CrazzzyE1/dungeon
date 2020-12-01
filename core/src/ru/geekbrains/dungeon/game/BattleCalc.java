@@ -5,11 +5,21 @@ import ru.geekbrains.dungeon.game.units.Unit;
 
 public class BattleCalc {
     public static int attack(Unit attacker, Unit target) {
-        int out = attacker.getWeapon().getDamage();
-        out -= target.getStats().getDefence();
-        if (out < 0) {
-            out = 0;
+        int out = 0;
+        if (attacker.getArmor().type != Armor.Type.NONE && target.getArmor().isEffectively(attacker.getWeapon())) {
+            target.getArmor().armorHh -= attacker.getWeapon().damage;
+            if (target.getArmor().armorHh < 1) {
+                target.getArmor().armorHh = 0;
+                target.getArmor().changeArmorType(Armor.Type.NONE);
+            }
+        } else {
+            out = attacker.getWeapon().getDamage();
+            out -= target.getStats().getDefence();
+            if (out < 0) {
+                out = 0;
+            }
         }
+
         return out;
     }
 
