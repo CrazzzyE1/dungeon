@@ -141,7 +141,18 @@ public abstract class Unit implements Poolable {
         return cellY == targetY && cellX == targetX;
     }
 
+    public void eatApple(int amount) {
+        stats.satiety += amount;
+    }
+
     public void goTo(int argCellX, int argCellY) {
+        if(gc.getGameMap().isAppleCell(argCellX, argCellY) && stats.movePoints > 0 && Math.abs(argCellX - cellX) + Math.abs(argCellY - cellY) == 1){
+            eatApple(20);
+            stats.movePoints--;
+            gc.getGameMap().changeFruitType(argCellX, argCellY);
+            return;
+        }
+
         if (!gc.isCellEmpty(argCellX, argCellY)) {
             return;
         }
@@ -168,6 +179,7 @@ public abstract class Unit implements Poolable {
             }
         }
         stats.attackPoints--;
+        stats.checkSatiety();
 
         gc.getEffectController().setup(target.getCellCenterX(), target.getCellCenterY(), weapon.getFxIndex());
     }
@@ -182,10 +194,12 @@ public abstract class Unit implements Poolable {
                 cellX = targetX;
                 cellY = targetY;
                 stats.movePoints--;
+                stats.checkSatiety();
                 gc.getGameMap().checkAndTakeDrop(this);
             }
         }
     }
+
 
     public void render(SpriteBatch batch, BitmapFont font18) {
         float hpAlpha = stats.hp == stats.maxHp ? 0.4f : 1.0f;
@@ -217,7 +231,7 @@ public abstract class Unit implements Poolable {
         font18.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         if (gc.getUnitController().isItMyTurn(this)) {
             stringHelper.setLength(0);
-            stringHelper.append("MP: ").append(stats.movePoints).append(" AP: ").append(stats.attackPoints);
+            stringHelper.append("MP: ").append(stats.movePoints).append(" AP: ").append(stats.attackPoints).append(" Sat: ").append(stats.satiety);
             font18.draw(batch, stringHelper, barX, barY + 80, 60, 1, false);
         }
         batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);

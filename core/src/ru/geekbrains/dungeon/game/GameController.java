@@ -13,13 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.PropertiesUtils;
 import lombok.Data;
 import ru.geekbrains.dungeon.helpers.Assets;
 import ru.geekbrains.dungeon.screens.ScreenManager;
-
-import java.io.IOException;
 
 @Data
 public class GameController {
@@ -69,6 +65,7 @@ public class GameController {
     }
 
     public void roundUp() {
+        getGameMap().generateApple();
         round++;
         unitController.startRound();
         if (round % 3 == 0) {
@@ -78,6 +75,10 @@ public class GameController {
 
     public boolean isCellEmpty(int cx, int cy) {
         return gameMap.isCellPassable(cx, cy) && unitController.isCellFree(cx, cy);
+    }
+
+    public void gameOver() {
+        ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAMEOVER);
     }
 
     public void update(float dt) {

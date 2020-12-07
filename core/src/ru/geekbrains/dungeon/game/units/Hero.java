@@ -31,6 +31,9 @@ public class Hero extends Unit {
     }
 
     public void update(float dt) {
+        if(stats.hp < 1) {
+            gc.gameOver();
+        }
         super.update(dt);
         if (Gdx.input.justTouched() && canIMakeAction()) {
             Monster m = gc.getUnitController().getMonsterController().getMonsterInCell(gc.getCursorX(), gc.getCursorY());

@@ -3,41 +3,47 @@ package ru.geekbrains.dungeon.game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
-import lombok.Data;
+import com.badlogic.gdx.math.Vector2;
 import ru.geekbrains.dungeon.game.units.Unit;
 import ru.geekbrains.dungeon.helpers.Assets;
-@Data
+
 public class GameMap {
     public enum CellType {
-        GRASS, WATER, TREE, SWAMP
+        GRASS, WATER, TREE
     }
 
     public enum DropType {
         NONE, GOLD
     }
 
-    private class Cell {
-        CellType type;
-        int stepCost;
-        DropType dropType;
-        int dropPower;
+    public enum FruitType {
+        NONE, APPLE
+    }
 
+    private class Cell {
+        int appleCount;
+        CellType type;
+        DropType dropType;
+        FruitType fruitType;
+        int dropPower;
         int index;
 
+        public CellType getType() {
+            return type;
+        }
+
         public Cell() {
+            appleCount = 0;
             type = CellType.GRASS;
             dropType = DropType.NONE;
+            fruitType = FruitType.NONE;
             index = 0;
-            stepCost = 1;
         }
 
         public void changeType(CellType to) {
             type = to;
             if (type == CellType.TREE) {
                 index = MathUtils.random(4);
-            }
-            if (type == CellType.SWAMP) {
-                stepCost = 2;
             }
         }
     }
@@ -46,7 +52,6 @@ public class GameMap {
     public static final int CELLS_Y = 12;
     public static final int CELL_SIZE = 60;
     public static final int FOREST_PERCENTAGE = 5;
-    public static final int SWAMP_PERCENTAGE = 5;
 
     public int getCellsX() {
         return CELLS_X;
@@ -59,10 +64,16 @@ public class GameMap {
     private Cell[][] data;
     private TextureRegion grassTexture;
     private TextureRegion goldTexture;
+    private TextureRegion fruitTexture;
     private TextureRegion[] treesTextures;
-    private TextureRegion swampTextures;
+    private Vector2[] apples;
+
 
     public GameMap() {
+        this.apples = new Vector2[100];
+        for (int i = 0; i < apples.length; i++) {
+            apples[i] = new Vector2();
+        }
         this.data = new Cell[CELLS_X][CELLS_Y];
         for (int i = 0; i < CELLS_X; i++) {
             for (int j = 0; j < CELLS_Y; j++) {
@@ -74,26 +85,27 @@ public class GameMap {
             this.data[MathUtils.random(0, CELLS_X - 1)][MathUtils.random(0, CELLS_Y - 1)].changeType(CellType.TREE);
         }
 
-        int swampCount = (int) ((CELLS_X * CELLS_Y * SWAMP_PERCENTAGE) / 100.0f);
-        for (int i = 0; i < swampCount; i++) {
-            this.data[MathUtils.random(0, CELLS_X - 1)][MathUtils.random(0, CELLS_Y - 1)].changeType(CellType.SWAMP);
-        }
-
         this.grassTexture = Assets.getInstance().getAtlas().findRegion("grass");
         this.goldTexture = Assets.getInstance().getAtlas().findRegion("chest").split(60, 60)[0][0];
+        this.fruitTexture = Assets.getInstance().getAtlas().findRegion("apple");
         this.treesTextures = Assets.getInstance().getAtlas().findRegion("trees").split(60, 90)[0];
-        this.swampTextures = Assets.getInstance().getAtlas().findRegion("swamp");
+    }
+
+    public boolean isAppleCell(int x, int y) {
+        return data[x][y].fruitType == FruitType.APPLE;
     }
 
     public boolean isCellPassable(int cx, int cy) {
         if (cx < 0 || cx > getCellsX() - 1 || cy < 0 || cy > getCellsY() - 1) {
             return false;
         }
-        if (data[cx][cy].type != CellType.GRASS && data[cx][cy].type != CellType.SWAMP) {
+        if (data[cx][cy].type != CellType.GRASS) {
             return false;
         }
         return true;
     }
+
+
 
     public void renderGround(SpriteBatch batch) {
         for (int i = 0; i < CELLS_X; i++) {
@@ -109,21 +121,40 @@ public class GameMap {
                 if (data[i][j].type == CellType.TREE) {
                     batch.draw(treesTextures[data[i][j].index], i * CELL_SIZE, j * CELL_SIZE);
                 }
-                if (data[i][j].type == CellType.SWAMP) {
-                    batch.draw(swampTextures, i * CELL_SIZE, j * CELL_SIZE);
-                }
                 if (data[i][j].dropType == DropType.GOLD) {
                     batch.draw(goldTexture, i * CELL_SIZE, j * CELL_SIZE);
+                }
+                if (data[i][j].fruitType == FruitType.APPLE) {
+                    batch.draw(fruitTexture, i * CELL_SIZE, j * CELL_SIZE);
                 }
             }
         }
     }
 
+
+
     // todo: перенести в калькулятор
 
-    public int getStepCost(int x, int y) {
-        return data[x][y].stepCost;
+    public void generateApple() {
+
+        int tmpApple = 0;
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[0].length; j++) {
+                if (data[i][j].type == CellType.TREE && data[i][j].fruitType != FruitType.APPLE) {
+                    apples[tmpApple].add(i, j);
+                    tmpApple++;
+                }
+            }
+        }
+        tmpApple = MathUtils.random(tmpApple);
+        data[(int) apples[tmpApple].x][(int) apples[tmpApple].y].fruitType = FruitType.APPLE;
+        for (int i = 0; i < apples.length; i++) {
+            apples[i].setZero();
+        }
+
+
     }
+
 
     public void generateDrop(int cellX, int cellY, int power) {
         if (MathUtils.random() < 0.5f) {
@@ -152,4 +183,9 @@ public class GameMap {
         currentCell.dropType = DropType.NONE;
         currentCell.dropPower = 0;
     }
+
+    public void changeFruitType(int x, int y) {
+        Cell currentCell = data[x][y];
+        currentCell.fruitType = FruitType.NONE;
+     }
 }
